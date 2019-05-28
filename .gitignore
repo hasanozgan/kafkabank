@@ -43,5 +43,5 @@ gradle-app.setting
 *.ipr
 
 transaction-producer/out
-
+balance-aggregator/out
 **.log

@@ -55,7 +55,7 @@ class TransactionGenerator(val accountSize: Int, val transactionLimitFrom: Int, 
                 TransactionType.OPENING,
                 customerID,
                 openingBalance,
-                Random.nextBoolean(),
+                false,
                 DateTime())
         ).union((1 until transactionLimit).map {
             if (Random.nextInt() % 2 == 0) {

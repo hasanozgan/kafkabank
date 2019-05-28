@@ -30,6 +30,7 @@ class KafkaProducerClient(val bootstrapServers: String, val schemaRegistryUrl: S
     }
 
     fun send(transaction: Transaction) {
+        println(transaction)
         kafkaProducer.send(ProducerRecord<Long, Transaction>(topicName, transaction))
     }
 
