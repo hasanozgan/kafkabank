@@ -14,9 +14,9 @@ class TransactionGenerator(val accountSize: Int, val transactionLimitFrom: Int, 
         val channel = Channel<Transaction>()
 
         GlobalScope.launch {
-            (1 until accountSize)
+            1.rangeTo(accountSize)
                     .flatMap {
-                        generateAccountWithTransactions(Random.nextInt(transactionLimitFrom, transactionLimitUntil))
+                        generateAccountWithTransactions()
                     }
                     .forEach { transaction ->
                         channel.send(transaction)
@@ -28,41 +28,32 @@ class TransactionGenerator(val accountSize: Int, val transactionLimitFrom: Int, 
         return channel
     }
 
-    private fun isFraud(): Boolean {
-        return (Random.nextInt(100) % 5 == 0)
-    }
+    private fun generateAccountWithTransactions(): List<Transaction> {
+        val customerID = Faker.idNumber.invalid()
+        val transactionFee = 2.5
+        val fraudTransaction = Transaction(TransactionType.WITHDRAW, customerID, 99.0, true, DateTime())
 
-    private fun deposit(customerID: String): Transaction {
-        return Transaction(TransactionType.DEPOSIT,
-                customerID,
-                Random.nextInt(1, 100).toDouble(),
-                isFraud(),
-                DateTime())
-    }
-
-    private fun withdraw(customerID: String): Transaction {
-        return Transaction(TransactionType.WITHDRAW,
-                customerID,
-                Random.nextInt(1, 100).toDouble(),
-                isFraud(),
-                DateTime())
-    }
-
-    private fun generateAccountWithTransactions(transactionLimit: Int): Set<Transaction> {
-        val customerID = String.format("%s-%s:%s", Faker.name.firstName(), Faker.name.lastName(), Faker.idNumber.invalid()).toUpperCase()
-
-        return listOf(Transaction(
-                TransactionType.OPENING,
-                customerID,
-                openingBalance,
-                false,
-                DateTime())
-        ).union((1 until transactionLimit).map {
-            if (Random.nextInt() % 2 == 0) {
-                deposit(customerID)
-            } else {
-                withdraw(customerID)
-            }
-        })
+        return listOf(
+                Transaction(TransactionType.OPENING, customerID, openingBalance, false, DateTime()),
+                Transaction(TransactionType.WITHDRAW, customerID, transactionFee, false, DateTime()),
+                Transaction(TransactionType.WITHDRAW, customerID, transactionFee, false, DateTime()),
+                Transaction(TransactionType.WITHDRAW, customerID, transactionFee, false, DateTime()),
+                fraudTransaction,
+                Transaction(TransactionType.WITHDRAW, customerID, transactionFee, false, DateTime()),
+                Transaction(TransactionType.WITHDRAW, customerID, transactionFee, false, DateTime()),
+                Transaction(TransactionType.DEPOSIT, customerID, 10.0, false, DateTime()),
+                Transaction(TransactionType.WITHDRAW, customerID, transactionFee, false, DateTime()),
+                Transaction(TransactionType.WITHDRAW, customerID, transactionFee, false, DateTime()),
+                Transaction(TransactionType.WITHDRAW, customerID, transactionFee, false, DateTime()),
+                fraudTransaction,
+                Transaction(TransactionType.WITHDRAW, customerID, transactionFee, false, DateTime()),
+                Transaction(TransactionType.WITHDRAW, customerID, transactionFee, false, DateTime()),
+                Transaction(TransactionType.WITHDRAW, customerID, transactionFee, false, DateTime()),
+                Transaction(TransactionType.DEPOSIT, customerID, 5.0, false, DateTime()),
+                Transaction(TransactionType.WITHDRAW, customerID, transactionFee, false, DateTime()),
+                Transaction(TransactionType.WITHDRAW, customerID, transactionFee, false, DateTime()),
+                Transaction(TransactionType.WITHDRAW, customerID, transactionFee, false, DateTime()),
+                fraudTransaction
+        )
     }
 }

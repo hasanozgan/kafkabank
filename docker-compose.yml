@@ -12,9 +12,8 @@ services:
         ZOO_PORT: 2181
         ZOO_SERVERS: server.1=zoo1:2888:3888
     volumes:
-      - ./full-stack/zoo1/data:/data
-      - ./full-stack/zoo1/datalog:/datalog
-
+      - ./data/zoo1/data:/data
+      - ./data/zoo1/datalog:/datalog
 
   kafka1:
     image: confluentinc/cp-kafka:5.2.1
@@ -30,7 +29,7 @@ services:
       KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     volumes:
-      - ./full-stack/kafka1/data:/var/lib/kafka/data
+      - ./data/kafka1/data:/var/lib/kafka/data
     depends_on:
       - zoo1
 
@@ -114,7 +113,7 @@ services:
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
       CONNECT_PLUGIN_PATH: '/usr/share/java,/etc/kafka-connect/jars'
     volumes:
-      - ./connectors:/etc/kafka-connect/jars/
+      - ./kafka-connectors:/etc/kafka-connect/jars/
     depends_on:
       - zoo1
       - kafka1
@@ -163,6 +162,34 @@ services:
       SERVER_HTTP_PORT: 9000
     depends_on:
       - zoo1
+
+  # flink-jobmanager:
+  #   image: flink:1.8.0-scala_2.12-alpine
+  #   expose:
+  #     - "6123"
+  #   ports:
+  #     - "18081:8081"
+  #   command: jobmanager
+  #   environment:
+  #     - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
+
+  # flink-taskmanager:
+  #   image: flink:1.8.0-scala_2.12-alpine
+  #   expose:
+  #     - "6121"
+  #     - "6122"
+  #   depends_on:
+  #     - flink-jobmanager
+  #   command: taskmanager
+  #   links:
+  #     - "flink-jobmanager:flink-jobmanager"
+  #   environment:
+  #     - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
+
+  postgres:
+      image: postgres:9
+      ports:
+        - 5432:5432
 
   transaction-producer:
     build: transaction-producer

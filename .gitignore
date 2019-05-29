@@ -44,4 +44,8 @@ gradle-app.setting
 
 transaction-producer/out
 balance-aggregator/out
+balance-aggregator-flink/out
 **.log
+
+balance-aggregator-ksql/vendor
+
