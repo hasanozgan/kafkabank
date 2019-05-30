@@ -5,7 +5,6 @@ kafkabank a poc
  - kafka broker
  - kafka connnector
  - kafka streams
- - flink
 
 ```sh
 confluent start
